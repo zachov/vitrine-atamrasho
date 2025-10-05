@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/inc/config.php';
 include __DIR__ . "/data/cinema.php";
+$uses_video = true;
 
 /** Miniature sûre (YouTube auto, fichier local existant, sinon placeholder) */
 function resolve_thumb(array $f): string {

@@ -14,7 +14,7 @@ include __DIR__ . "/inc/head.php"; // charge aussi url()
     >
     <div class="position-relative container text-center py-5" style="z-index:2;">
       <div class="bg-white bg-opacity-75 p-4 rounded shadow-lg d-inline-block">
-        <h1 class="display-5 fw-bold mb-3">Bienvenue dans mon univers</h1>
+        <h1 class="display-5 fw-bold mb-3">Accueil - Atam Rasho</h1>
         <p class="lead mb-3">Entre art contemporain et cinéma d’animation,<br> explorez mes dernières créations.</p>
         <a href="<?= url('dessins') ?>" class="btn btn-brand btn-lg">Voir les dessins</a>
       </div>

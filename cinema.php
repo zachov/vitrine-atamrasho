@@ -1,9 +1,11 @@
 <?php
+
 require_once __DIR__ . '/inc/config.php';
 $page_title = "Cinéma d’animation — Atam Rasho";
 $page_description = "Courts-métrages d’animation d’Atam Rasho : Jehanne, Voix des Soupirs, Le Fils Prodigue, La nuit sur le Mont Clair…";
 include __DIR__ . "/inc/head.php";
 include __DIR__ . "/data/cinema.php";
+$uses_video = true;
 
 /** Miniature sûre (YouTube auto, fichier local existant, sinon placeholder) */
 function resolve_thumb(array $f): string {

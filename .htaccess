@@ -14,3 +14,6 @@ RewriteRule ^cinema/?$ cinema.php [L,NC,QSA]
 RewriteRule ^a-propos/?$ apropos.php [L,NC,QSA]
 RewriteRule ^cinema/?$ cinema.php [L,NC,QSA]
 RewriteRule ^film/([a-z0-9-]+)/?$ film.php?slug=$1 [L,NC,QSA]
+
+ErrorDocument 404 /404.php
+

@@ -1,14 +1,22 @@
-# Utilise l'image officielle PHP avec serveur intégré
+# Image Apache + PHP
 FROM php:8.2-apache
 
-# Copie ton site dans le conteneur
+# Activer rewrite et .htaccess
+RUN a2enmod rewrite \
+ && sed -ri 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+
+# Copier les sources
 COPY . /var/www/html/
 
-# Active mod_rewrite si besoin pour tes routes propres
-RUN a2enmod rewrite
+# Script d’entrée pour binder sur $PORT
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
-# Expose le port web
-EXPOSE 80
+# Droits basiques
+RUN chown -R www-data:www-data /var/www/html
 
-# Lance Apache (Render détecte ce port automatiquement)
-CMD ["apache2-foreground"]
+# Informationnel (Render passera de toute façon $PORT)
+EXPOSE 10000
+
+# Lancer via notre script
+CMD ["/usr/local/bin/start.sh"]

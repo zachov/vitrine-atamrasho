@@ -41,6 +41,11 @@ include __DIR__ . "/data/dessins.php";
             $thumb1200_webp = url('assets/thumbs/1200/' . $baseName . '.webp');
             // original pour lightbox
             $original = url($w['image']);
+
+            // helpers inline
+            $hasLitho = isset($w['litho_prix_ttc']) && is_numeric($w['litho_prix_ttc']);
+            $hasPrixOriginalTTC = isset($w['prix_ttc']) && is_numeric($w['prix_ttc']);
+            $hasPrixOriginalHT  = isset($w['prix_ht'])  && is_numeric($w['prix_ht']);
           ?>
           <div class="col">
             <div class="card h-100 shadow-sm art-card">
@@ -65,11 +70,38 @@ include __DIR__ . "/data/dessins.php";
               </a>
 
               <div class="card-body text-center">
-                <h3 class="h6">
+                <h3 class="h6 mb-1">
                   <a class="art-title-link" href="<?= url('dessin/' . urlencode($w['slug'])) ?>">
                     <?= htmlspecialchars($w['title']) ?>
                   </a>
                 </h3>
+
+                <!-- Petit sous-texte harmonisé : année + info de disponibilité/prix -->
+                <div class="small text-body-secondary">
+                  <?php if (!empty($w['year'])): ?>
+                    <span><?= htmlspecialchars($w['year']) ?></span>
+                    <?php if ($hasLitho || $hasPrixOriginalTTC || $hasPrixOriginalHT): ?>
+                      <span class="mx-1">•</span>
+                    <?php endif; ?>
+                  <?php endif; ?>
+
+                  <?php if ($hasLitho): ?>
+                    <span class="badge text-bg-light border">Lithographie IDEM&nbsp;PARIS</span>
+                    <span class="fw-semibold text-danger ms-1">
+                      <?= number_format((float)$w['litho_prix_ttc'], 0, ',', ' ') ?> € TTC
+                    </span>
+                  <?php elseif ($hasPrixOriginalTTC): ?>
+                    <span class="text-muted">Original</span>
+                    <span class="fw-semibold text-danger ms-1">
+                      <?= number_format((float)$w['prix_ttc'], 0, ',', ' ') ?> € TTC
+                    </span>
+                  <?php elseif ($hasPrixOriginalHT): ?>
+                    <span class="text-muted">Original</span>
+                    <span class="fw-semibold text-danger ms-1">
+                      <?= number_format((float)$w['prix_ht'], 0, ',', ' ') ?> € HT
+                    </span>
+                  <?php endif; ?>
+                </div>
               </div>
             </div>
           </div>

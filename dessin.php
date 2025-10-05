@@ -15,7 +15,7 @@ if (!$work) {
 }
 
 $page_title = $work['title'] . " — Dessins — Atam Rasho";
-$page_description = $work['desc'] ?? ("Détails du dessin « " . $work['title'] . " ».");
+$page_description = $work['medium'] . " — " . ($work['size'] ?? "");
 $page_og_image = $work['image'];
 include __DIR__ . "/inc/head.php";
 
@@ -27,6 +27,11 @@ $baseName       = pathinfo($work['image'], PATHINFO_FILENAME);
 $thumb1200_jpg  = url('assets/thumbs/1200/' . $baseName . '.jpg');
 $thumb1200_webp = url('assets/thumbs/1200/' . $baseName . '.webp');
 $original       = url($work['image']);
+
+/* Utilitaires prix */
+function euro(?float $n): string {
+  return number_format((float)$n, 2, ',', ' ') . " €";
+}
 ?>
 
 <main class="container py-4">
@@ -59,33 +64,46 @@ $original       = url($work['image']);
       <p class="text-muted mb-3">Atam Rasho</p>
 
       <ul class="list-unstyled lh-lg small text-body-secondary mb-4">
-        <?php if (!empty($work['year'])): ?><li><?= htmlspecialchars($work['year']) ?></li><?php endif; ?>
-        <?php if (!empty($work['medium'])): ?><li><?= htmlspecialchars($work['medium']) ?></li><?php endif; ?>
-        <?php if (!empty($work['size'])): ?><li><?= htmlspecialchars($work['size']) ?></li><?php endif; ?>
-        <?php if (!empty($work['tirage'])): ?><li><?= htmlspecialchars($work['tirage']) ?></li><?php endif; ?>
-        <?php if (!empty($work['editeur'])): ?><li class="fw-semibold"><?= htmlspecialchars($work['editeur']) ?></li><?php endif; ?>
-        <li class="text-body-secondary">Prix hors taxes</li>
+        <?php if (!empty($work['year'])): ?>
+          <li><strong>Année :</strong> <?= htmlspecialchars($work['year']) ?></li>
+        <?php endif; ?>
+        <?php if (!empty($work['medium'])): ?>
+          <li><strong>Technique :</strong> <?= htmlspecialchars($work['medium']) ?></li>
+        <?php endif; ?>
+        <?php if (!empty($work['size'])): ?>
+          <li><strong>Dimensions :</strong> <?= htmlspecialchars($work['size']) ?></li>
+        <?php endif; ?>
       </ul>
 
-      <?php if (isset($work['prix'])): ?>
-        <p class="fs-4 fw-semibold text-danger mb-4"><?= number_format($work['prix'], 2, ',', ' ') ?> €</p>
+      <!-- Prix original (si disponible) -->
+      <?php if (isset($work['prix_ttc'])): ?>
+        <div class="mb-4">
+          <div class="text-muted small">Prix TTC (œuvre originale)</div>
+          <div class="fs-4 fw-semibold text-danger"><?= euro((float)$work['prix_ttc']) ?></div>
+        </div>
+      <?php elseif (isset($work['prix_ht'])): ?>
+        <div class="mb-4">
+          <div class="text-muted small">Prix hors taxes (œuvre originale)</div>
+          <div class="fs-4 fw-semibold text-danger"><?= euro((float)$work['prix_ht']) ?></div>
+        </div>
       <?php endif; ?>
 
-      <form method="post" action="#">
-        <div class="mb-3" style="max-width: 180px;">
-          <select class="form-select" name="quantite">
-            <?php for ($i = 1; $i <= 10; $i++): ?>
-              <option value="<?= $i ?>"><?= $i ?></option>
-            <?php endfor; ?>
-          </select>
+      <!-- Option Lithographie IDEM PARIS -->
+      <?php if (!empty($work['litho_prix_ttc'])): ?>
+        <div class="border rounded p-3 bg-light-subtle mb-4">
+          <div class="fw-semibold mb-1">Lithographie</div>
+          <div class="small text-muted mb-1">
+            <?= htmlspecialchars($work['editeur'] ?? 'Imprimée chez IDEM PARIS') ?>
+          </div>
+          <div class="fw-semibold"><?= euro((float)$work['litho_prix_ttc']) ?> TTC</div>
         </div>
-        <button type="submit" class="btn btn-outline-danger w-100">Ajouter au panier</button>
-      </form>
+      <?php endif; ?>
 
       <?php if (!empty($work['desc'])): ?>
-        <p class="work-desc mt-4"><?= nl2br(htmlspecialchars($work['desc'])) ?></p>
+        <p class="work-desc mt-3"><?= nl2br(htmlspecialchars($work['desc'])) ?></p>
       <?php endif; ?>
 
+      <!-- Navigation entre dessins -->
       <div class="d-flex justify-content-between mt-5 pt-3 border-top">
         <?php if ($prev): ?>
           <a class="link-primary small" href="<?= url('dessin/' . urlencode($prev['slug'])) ?>">← <?= htmlspecialchars($prev['title']) ?></a>
@@ -96,6 +114,29 @@ $original       = url($work['image']);
       </div>
     </div>
   </article>
+
+  <!-- JSON-LD Artwork (SEO) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VisualArtwork",
+    "name": <?= json_encode($work['title']) ?>,
+    "creator": { "@type": "Person", "name": "Atam Rasho" },
+    "artMedium": <?= json_encode($work['medium'] ?? "") ?>,
+    "width": <?= json_encode($work['size'] ?? "") ?>,
+    "dateCreated": "<?= intval($work['year']) ?>",
+    "image": <?= json_encode($original) ?>,
+    <?php if (!empty($work['prix_ttc'])): ?>
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "EUR",
+      "price": "<?= number_format((float)$work['prix_ttc'], 2, '.', '') ?>",
+      "availability": "https://schema.org/InStock"
+    },
+    <?php endif; ?>
+    "url": <?= json_encode(url('dessin/' . $work['slug'])) ?>
+  }
+  </script>
 </main>
 
 <?php include __DIR__ . "/inc/footer.php"; ?>

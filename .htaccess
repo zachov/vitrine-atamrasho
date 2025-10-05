@@ -1,0 +1,16 @@
+RewriteEngine On
+RewriteBase /
+
+# Page racine -> index.php (ceinture et bretelles)
+RewriteRule ^$ index.php [L]
+
+# URLs propres
+RewriteRule ^dessins/?$ dessins.php [L,NC,QSA]
+RewriteRule ^dessin/([a-z0-9-]+)/?$ dessin.php?slug=$1 [L,NC,QSA]
+
+RewriteRule ^contact/?$ contact.php [L,NC,QSA]
+RewriteRule ^boutique/?$ boutique.php [L,NC,QSA]
+RewriteRule ^cinema/?$ cinema.php [L,NC,QSA]
+RewriteRule ^a-propos/?$ apropos.php [L,NC,QSA]
+RewriteRule ^cinema/?$ cinema.php [L,NC,QSA]
+RewriteRule ^film/([a-z0-9-]+)/?$ film.php?slug=$1 [L,NC,QSA]
